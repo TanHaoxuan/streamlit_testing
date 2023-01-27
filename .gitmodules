@@ -1,0 +1,6 @@
+[submodule "thirdparty/depthai-python"]
+	path = thirdparty/depthai-python
+	url = git@github.com:luxonis/depthai-python.git
+[submodule "thirdparty/ecal-common"]
+	path = thirdparty/ecal-common
+	url = git@github.com:vilota-dev/ecal-common.git
