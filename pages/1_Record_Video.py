@@ -149,9 +149,14 @@ if online and select_folder:
         stframe.image(show_map["mono8"],channels = 'RGB', use_column_width=True)
     
 
+    #cd to correct folder
+
+
+
+
     convert = st.button('Convert to MP4', on_click=subproc, args=("**Training...**",))
 
-    if train:
+    if convert:
         subprocess.run(["sh", "train.sh", yv5_path, img_width, batch, epochs, dataset, weights, rectangle, workers])
         st.info(":information_source: Results saved to " + yv5_path + "/train/exp...")
         st.success(':white_check_mark: Trained')
