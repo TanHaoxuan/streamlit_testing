@@ -15,7 +15,6 @@ st.set_page_config(page_title='Record Video', layout='centered')
 online = st.sidebar.checkbox("Initialise camera")
 select_folder = st.sidebar.checkbox("Select folder to use")
 
-
 stframe = st.empty()
 
 
@@ -106,11 +105,11 @@ def initialize_depthai():
     outQ_B = dev.getOutputQueue(name=veBOut.getStreamName(), maxSize=30, blocking=False)
     #display queue : 
     showQ_B = dev.getOutputQueue(name=manipOutB.getStreamName(), maxSize=4,blocking=False)
+    file_camb_H264 = open((folder_name + '/record.h264'), 'wb')
 
+    
     def out_callback():
-        # print(global_dict["recording_state"])
         if( global_dict["recording_state"]):
-            file_camb_H264 = open((folder_name + '/record.h264'), 'wb')
             print("I am recording")
             outQ_B.get().getData().tofile(file_camb_H264)
         else:
@@ -136,9 +135,6 @@ print("depthai set up.")
 
 if online and select_folder:
     print('Webcam Online ...')
-      
-    # st.write(st.session_state)
-
     print("Recording start.")
     print("Press Ctrl+C to stop recording...")
 
@@ -148,7 +144,6 @@ if online and select_folder:
 
     while True:
 
-        # print(f"current_state = {global_dict["recording_state"]}")
         if "mono8" not in show_map:
             continue
         stframe.image(show_map["mono8"],channels = 'RGB', use_column_width=True)
