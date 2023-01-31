@@ -107,7 +107,7 @@ def initialize_depthai():
     showQ_B = dev.getOutputQueue(name=manipOutB.getStreamName(), maxSize=4,blocking=False)
     file_camb_H264 = open((folder_name + '/record.h264'), 'wb')
 
-    
+
     def out_callback():
         if( global_dict["recording_state"]):
             print("I am recording")
@@ -147,7 +147,16 @@ if online and select_folder:
         if "mono8" not in show_map:
             continue
         stframe.image(show_map["mono8"],channels = 'RGB', use_column_width=True)
+    
 
+    convert = st.button('Convert to MP4', on_click=subproc, args=("**Training...**",))
+
+    if train:
+        subprocess.run(["sh", "train.sh", yv5_path, img_width, batch, epochs, dataset, weights, rectangle, workers])
+        st.info(":information_source: Results saved to " + yv5_path + "/train/exp...")
+        st.success(':white_check_mark: Trained')
+
+ ffmpeg -framerate 30 -i record.h264 -c copy test.mp4
 
 
         
