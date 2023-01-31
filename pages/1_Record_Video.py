@@ -1,14 +1,11 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import cv2
-import psutil
 import subprocess
-import threading
-import time
-import shutil
 
 import depthai as dai
+
+# Page UI
 
 st.set_page_config(page_title='Record Video', layout='centered')
 
@@ -17,23 +14,24 @@ select_folder = st.sidebar.checkbox("Select folder to use")
 
 stframe = st.empty()
 
+convert = st.button('Convert to MP4')
 
 
+# Global map
 
 @st.cache(allow_output_mutation=True)
 def get_map():
     print("obtained a new copy of imshow_map")
     return {}
 
-global_dict = get_map()
-
-show_map = get_map()
-out_map = get_map()
+global_dict = get_map() #store recording state
+show_map = get_map()    #store imgcvframe for display
 
 
 
 
-# set up folder
+# Set up folder
+
 select_state_cam = st.sidebar.selectbox("Select state of cam",
                                 ['static', 'dynamic'])
 num_folder = st.sidebar.slider("Select folder number", max_value=10, min_value=1, step=1)
@@ -43,7 +41,6 @@ try:
     subprocess.run(['mkdir', folder_name])
 except:
     st.write = folder_name + " " + "exists"
-
 
 
 
@@ -105,19 +102,19 @@ def initialize_depthai():
     outQ_B = dev.getOutputQueue(name=veBOut.getStreamName(), maxSize=30, blocking=False)
     #display queue : 
     showQ_B = dev.getOutputQueue(name=manipOutB.getStreamName(), maxSize=4,blocking=False)
-    file_camb_H264 = open((folder_name + '/record.h264'), 'wb')
+    
+    file_name = "/record_{}.h264".format(global_dict["count"])
+
+    file_camb_H264 = open((folder_name + file_name), 'wb')
 
 
     def out_callback():
-        if( global_dict["recording_state"]):
-            print("I am recording")
+        if(global_dict["recording_state"]):
             outQ_B.get().getData().tofile(file_camb_H264)
         else:
-            print("i am not recording")
             pass
 
-
-    def show_callback():
+    def show_callback(): # need to add protection
         show_map["mono8"] = showQ_B.get().getCvFrame()
 
     outQ_B.addCallback(out_callback)
@@ -126,11 +123,9 @@ def initialize_depthai():
     return dev, outQ_B, showQ_B
 
 
-
-
-
 dev, outQ_B, showQ_B = initialize_depthai()
 print("depthai set up.")
+
 
 
 if online and select_folder:
@@ -139,29 +134,24 @@ if online and select_folder:
     print("Press Ctrl+C to stop recording...")
 
     global_dict["recording_state"] = st.checkbox('Record video')
-
-
+    global_dict["count"] = 1
 
     while True:
 
+        # Display image
         if "mono8" not in show_map:
             continue
         stframe.image(show_map["mono8"],channels = 'RGB', use_column_width=True)
     
+        # Convert to mp4
+        recorded_data_path='/home/haoxuan362709/streamlit_file/static_1'
+        h264_file = ' record.h264'
+        mp4_file = 'test.mp4'
 
-    #cd to correct folder
 
-
-
-
-    convert = st.button('Convert to MP4', on_click=subproc, args=("**Training...**",))
-
-    if convert:
-        subprocess.run(["sh", "train.sh", yv5_path, img_width, batch, epochs, dataset, weights, rectangle, workers])
-        st.info(":information_source: Results saved to " + yv5_path + "/train/exp...")
-        st.success(':white_check_mark: Trained')
-
- ffmpeg -framerate 30 -i record.h264 -c copy test.mp4
+        if convert: # need to add protection
+            subprocess.run(["sh", "convert.sh", recorded_data_path, h264_file, mp4_file])
+            st.success(':white_check_mark: Converted to MP4')
 
 
         
