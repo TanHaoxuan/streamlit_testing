@@ -14,7 +14,6 @@ select_folder = st.sidebar.checkbox("Select folder to use")
 
 stframe = st.empty()
 
-convert = st.button('Convert to MP4')
 
 
 # Global map
@@ -27,6 +26,7 @@ def get_map():
 global_dict = get_map() #store recording state
 show_map = get_map()    #store imgcvframe for display
 
+global_dict["count"] = 1
 
 
 
@@ -134,7 +134,8 @@ if online and select_folder:
     print("Press Ctrl+C to stop recording...")
 
     global_dict["recording_state"] = st.checkbox('Record video')
-    global_dict["count"] = 1
+    convert = st.button('Convert to MP4')
+
 
     while True:
 
@@ -145,13 +146,13 @@ if online and select_folder:
     
         # Convert to mp4
         recorded_data_path='/home/haoxuan362709/streamlit_file/static_1'
-        h264_file = ' record.h264'
-        mp4_file = 'test.mp4'
+        h264_file = "record_{}.h264".format(global_dict["count"])
+        mp4_file = "converted_record_{}.mp4".format(global_dict["count"])
 
 
         if convert: # need to add protection
             subprocess.run(["sh", "convert.sh", recorded_data_path, h264_file, mp4_file])
-            st.success(':white_check_mark: Converted to MP4')
+            # st.success(':white_check_mark: Converted to MP4')
 
 
         
