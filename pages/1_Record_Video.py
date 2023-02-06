@@ -156,12 +156,3 @@ if online and select_folder:
 
 
         
-
-
-
-
-
-
-
-                        
-
